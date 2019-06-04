@@ -1,52 +1,44 @@
 class ShoppingCart:
 
-    def __init__(self, total=0, employee_discount=None, items=[]):
-        self.total = total
+    def __init__(self, employee_discount=None):
+        self.total = 0
         self.employee_discount = employee_discount
-        self.items = items
+        self.items = []
         
     def add_item(self, name, price, quantity=1):
-        self.name = name
-        self.price = price
-        self.quantity = quantity
-        self.items.append([name, price, quantity])
-        basket_total = []
-        for i in self.items:
-            basket_total.append(i[1]*i[2])
-        self.total = sum(basket_total)
+        for i in list(range(quantity)):
+            self.items.append({"name": name, "price": price})
+            self.total += price
         return self.total
 
     def mean_item_price(self):
-        import numpy as np
-        mean_list = []
-        for e in self.items:
-            for i in range(e[2]):
-                mean_list.append(e[1])
-        return np.mean(mean_list)
+        num_items = len(self.items)
+        total = self.total
+        mean = total/num_items
+        return mean
 
     def median_item_price(self):
-        import numpy as np
-        median_list = []
-        for e in self.items:
-            for i in range(e[2]):
-                median_list.append(e[1])
-        return np.median(median_list)
+        prices = [item["price"] for item in self.items]
+        length = len(prices)
+        if (length%2 == 0):
+            mid_one = int(length/2)
+            mid_two = mid_one - 1
+            median = (prices[mid_one] + prices[mid_two])/2
+            return median
+        mid = int(length/2)
+        return prices[mid]
 
     def apply_discount(self):
-        if self.employee_discount != None:
-            self.total = self.total * ((100 - self.employee_discount)/100) 
-            return self.total
+        if self.employee_discount:
+            discount = self.employee_discount/100
+            disc_total = self.total * (1 - discount)
+            return disc_total
         else:
             return "Sorry, there is no discount to apply to your cart :("
 
     def void_last_item(self):
-        if self.items == []:
-            return "There are no items in your cart!"
+        if self.items:
+            removed_item = self.items.pop()
         else:
-            del self.items[-1]
-            basket_total = []
-            for i in self.items:
-                basket_total.append(i[1]*i[2])
-            self.total = sum(basket_total)
-            return self.total
-            
+            return "There are no items in your cart!"
+        self.total -= removed_item['price']
